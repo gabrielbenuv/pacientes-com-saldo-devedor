@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rota de Campo — Tubarão SC — Semana 23/03</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Fraunces:opsz,wght@9..144,300;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1012;
+    --surface: #171a1e;
+    --surface2: #1e2228;
+    --border: #2a2f38;
+    --text: #e8e6e0;
+    --muted: #7a7d85;
+    --green: #4ade80;
+    --green-dim: #1a3a2a;
+    --amber: #f59e0b;
+    --amber-dim: #2a1f08;
+    --blue: #60a5fa;
+    --blue-dim: #0f1f35;
+    --red: #f87171;
+    --red-dim: #2a0f0f;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Space Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #0a2818 0%, #0f1012 60%);
+    padding: 48px 40px 40px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: 'TUBARÃO SC';
+    position: absolute;
+    right: -20px; top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    font-size: 80px;
+    font-weight: 700;
+    color: rgba(74,222,128,0.04);
+    letter-spacing: 0.2em;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--green);
+    border: 1px solid var(--green);
+    padding: 4px 10px;
+    margin-bottom: 16px;
+    opacity: 0.8;
+  }
+  .header h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 8px;
+    color: #fff;
+  }
+  .header h1 em {
+    color: var(--green);
+    font-style: normal;
+  }
+  .header-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 32px;
+  }
+  .stats-row {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .stat-num {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--green);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    padding: 0 40px;
+    overflow-x: auto;
+  }
+  .tab {
+    padding: 16px 20px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font-family: 'Space Mono', monospace;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active {
+    color: var(--green);
+    border-bottom-color: var(--green);
+  }
+
+  /* CONTENT */
+  .content { padding: 40px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* WEEK PLAN */
+  .week-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  .day-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .day-card:hover { border-color: var(--green); }
+  .day-header {
+    display: grid;
+    grid-template-columns: 160px 1fr auto;
+    align-items: center;
+    padding: 20px 24px;
+    cursor: pointer;
+    gap: 24px;
+  }
+  .day-date {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .day-name {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .day-num {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+  .day-info {}
+  .day-focus {
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .day-bairros {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .bairro-tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    background: var(--green-dim);
+    color: var(--green);
+    border-radius: 4px;
+    letter-spacing: 0.08em;
+  }
+  .day-note {
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .day-meta {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+  .meta-num {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    color: var(--amber);
+  }
+  .meta-label {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .day-body {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 20px 24px;
+  }
+  .day-body.open { display: block; }
+
+  /* COMPANY LIST */
+  .company-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .company-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: start;
+  }
+  .company-num {
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 4px;
+    font-family: 'Space Mono', monospace;
+  }
+  .company-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .company-addr {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .company-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .btn-maps {
+    font-size: 10px;
+    padding: 5px 10px;
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid rgba(74,222,128,0.3);
+    border-radius: 6px;
+    text-decoration: none;
+    white-space: nowrap;
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-maps:hover { background: rgba(74,222,128,0.2); }
+  .visited-btn {
+    font-size: 10px;
+    padding: 5px 10px;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    transition: all 0.15s;
+  }
+  .visited-btn.done {
+    background: var(--green-dim);
+    color: var(--green);
+    border-color: var(--green);
+  }
+
+  /* BAIRROS PANEL */
+  .bairro-section {
+    margin-bottom: 32px;
+  }
+  .bairro-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .bairro-name {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .bairro-count {
+    font-size: 11px;
+    padding: 3px 10px;
+    background: var(--amber-dim);
+    color: var(--amber);
+    border-radius: 20px;
+    letter-spacing: 0.08em;
+  }
+  .bairro-day-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+    background: var(--green-dim);
+    color: var(--green);
+    border-radius: 4px;
+    margin-left: auto;
+    letter-spacing: 0.06em;
+  }
+
+  /* PROGRESS BAR */
+  .progress-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 32px;
+  }
+  .progress-title {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .progress-stats {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 16px;
+  }
+  .prog-num { font-family: 'Fraunces', serif; font-size: 28px; color: var(--green); }
+  .prog-label { font-size: 11px; color: var(--muted); }
+  .progress-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 3px;
+    transition: width 0.3s;
+  }
+
+  /* SCHEDULE */
+  .schedule-grid {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 0;
+    max-width: 600px;
+    margin-bottom: 32px;
+  }
+  .time {
+    font-size: 11px;
+    color: var(--muted);
+    padding: 14px 16px 14px 0;
+    border-bottom: 1px solid var(--border);
+    border-right: 2px solid var(--green-dim);
+  }
+  .act {
+    padding: 14px 0 14px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .act strong { display: block; color: var(--text); font-size: 13px; margin-bottom: 2px; }
+  .act span { color: var(--muted); }
+
+  /* SEARCH */
+  .search-box {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 24px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-box:focus { border-color: var(--green); }
+  .search-box::placeholder { color: var(--muted); }
+
+  /* PHONE */
+  .company-phone {
+    font-size: 11px;
+    color: var(--amber);
+    margin-top: 2px;
+  }
+
+  /* STATUS tracking */
+  .status-chip {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .status-pending { background: var(--border); color: var(--muted); }
+  .status-done { background: var(--green-dim); color: var(--green); }
+
+  @media (max-width: 700px) {
+    .header { padding: 32px 20px; }
+    .header h1 { font-size: 32px; }
+    .content { padding: 20px; }
+    .tabs { padding: 0 20px; }
+    .day-header { grid-template-columns: 120px 1fr auto; }
+    .stats-row { gap: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="badge">Plano de Campo · Semana 1</div>
+  <h1>Rota <em>Tubarão</em><br>23–27 de Março</h1>
+  <div class="header-sub">Software de Gestão para Clínicas · Outbound presencial</div>
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-num">140</div>
+      <div class="stat-label">Empresas únicas</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">18</div>
+      <div class="stat-label">Bairros mapeados</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">5</div>
+      <div class="stat-label">Dias de visita</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">54</div>
+      <div class="stat-label">Meta de visitas semana</div>
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showPanel('semana')">📅 Semana</button>
+  <button class="tab" onclick="showPanel('bairros')">📍 Por Bairro</button>
+  <button class="tab" onclick="showPanel('rotina')">⏰ Rotina Diária</button>
+</div>
+
+<div class="content">
+
+  <!-- SEMANA PANEL -->
+  <div class="panel active" id="panel-semana">
+    <div class="progress-section">
+      <div class="progress-title">Progresso da semana</div>
+      <div class="progress-stats">
+        <div><div class="prog-num" id="vis-count">0</div><div class="prog-label">visitadas</div></div>
+        <div><div class="prog-num">54</div><div class="prog-label">meta</div></div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-bar" style="width:0%"></div></div>
+    </div>
+
+    <div class="week-grid" id="week-grid"></div>
+  </div>
+
+  <!-- BAIRROS PANEL -->
+  <div class="panel" id="panel-bairros">
+    <input type="text" class="search-box" placeholder="Buscar empresa pelo nome..." oninput="filterCompanies(this.value)" id="search-input">
+    <div id="bairros-list"></div>
+  </div>
+
+  <!-- ROTINA PANEL -->
+  <div class="panel" id="panel-rotina">
+    <div style="margin-bottom:32px">
+      <div style="font-family:'Fraunces',serif;font-size:28px;color:#fff;margin-bottom:8px;">Rotina de Campo</div>
+      <div style="font-size:13px;color:var(--muted);">Meta diária: <strong style="color:var(--green)">10–12 visitas</strong> + 15 abordagens WhatsApp</div>
+    </div>
+    <div class="schedule-grid">
+      <div class="time">07:30</div>
+      <div class="act"><strong>Saída + WhatsApp outreach</strong><span>Envie 15 mensagens para clínicas do bairro do dia antes de chegar</span></div>
+      <div class="time">08:30</div>
+      <div class="act"><strong>Bloco manhã — 5 visitas</strong><span>Cluster 1 do bairro. ~45min por visita (deslocamento + pitch)</span></div>
+      <div class="time">12:30</div>
+      <div class="act"><strong>Almoço + CRM</strong><span>Registre os contatos no caderno/app. Responda WhatsApps pendentes</span></div>
+      <div class="time">13:30</div>
+      <div class="act"><strong>Bloco tarde — 5–7 visitas</strong><span>Priorize quem respondeu pelo WhatsApp. Cold visits nos demais</span></div>
+      <div class="time">17:30</div>
+      <div class="act"><strong>Follow-up e agenda</strong><span>Ligue para contatos quentes. Confirme demos para próximos dias</span></div>
+      <div class="time">18:30</div>
+      <div class="act"><strong>Relatório do dia</strong><span>Visitas, pitches, objeções, agendamentos. Base para o planejamento de amanhã</span></div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;max-width:600px">
+      <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">Script de abertura (porta fria)</div>
+      <div style="font-size:14px;line-height:1.8;color:var(--text);">
+        <em style="color:var(--muted)">[Entre sorrindo, fale com a recepcionista]</em><br><br>
+        <strong style="color:var(--green)">"Oi, tudo bem! Meu nome é [nome], sou da [empresa]. A gente tem um software de gestão para clínicas — agenda, prontuário, financeiro, tudo num lugar só. Queria conversar 5 minutinhos com a responsável. Ela estaria disponível agora?"</strong><br><br>
+        <em style="color:var(--muted)">[Se sim → pitch de 5min + oferta de demo. Se não → deixe cartão + WhatsApp da dona]</em>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;background:var(--amber-dim);border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:24px;max-width:600px">
+      <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber);margin-bottom:12px;">⚡ Sinais de compra — procure isso</div>
+      <div style="font-size:13px;color:var(--text);line-height:1.8;">
+        ✓ Clínica crescendo: passou de 1 para 2+ salas recentemente<br>
+        ✓ Recepcionista sobrecarregada (agenda bagunçada)<br>
+        ✓ Posts frequentes no Instagram (últimas 2 semanas)<br>
+        ✓ Reviews recentes no Google (atualiza todo mês)<br>
+        ✓ "A gente usa Excel / WhatsApp para tudo"
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const DATA = {"Aeroporto": [{"n": "Botoclinic Farol Shopping - Botox e Estética Corporal", "e": "Av. Marcolino Martins Cabral, 2525", "t": "(48) 99815-2627", "u": "https://www.google.com/maps/search/?api=1&query=Botoclinic%20Farol%20Shopping%20-%20Botox%20e%20Est%C3%A9tica%20Corporal&query_place_id=ChIJkT_OphBDIZUR7TJ_7Yx3usM"}, {"n": "Instituto Angela Batista – Harmonização Íntima, Facial e Corporal.", "e": "Próximo ao Farol Shopping", "t": "(48) 99862-0568", "u": "https://www.google.com/maps/search/?api=1&query=Instituto%20Angela%20Batista%20%E2%80%93%20Harmoniza%C3%A7%C3%A3o%20%C3%8Dntima%2C%20Facial%20e%20Corporal.&query_place_id=ChIJp0cRl0RDIZURsBOfrNsI_wM"}, {"n": "Atend Já - Tubarão", "e": "Av. Marcolino Martins Cabral, 3108", "t": "(48) 31920-641", "u": "https://www.google.com/maps/search/?api=1&query=Atend%20J%C3%A1%20-%20Tubar%C3%A3o&query_place_id=ChIJSYYuHABDIZURzvt0KRvUmxU"}, {"n": "Ódena Saúde da Mulher", "e": "R. Pôrto Alegre, 839", "t": "(48) 36265-800", "u": "https://www.google.com/maps/search/?api=1&query=%C3%93dena%20Sa%C3%BAde%20da%20Mulher&query_place_id=ChIJF6-pIJpDIZURcG3UQqkgETs"}, {"n": "ÍNTEGRA CLÍNICA MÉDICA", "e": "Av. Marcolino Martins Cabral, 3113", "t": "(48) 30524-530", "u": "https://www.google.com/maps/search/?api=1&query=%C3%8DNTEGRA%20CL%C3%8DNICA%20M%C3%89DICA&query_place_id=ChIJuwM1EAVDIZUR05A1dx18eKY"}, {"n": "Fernanda Martins - Clínica Capilar", "e": "Av. Marcolino Martins Cabral, 2378", "t": "(48) 99144-0302", "u": "https://www.google.com/maps/search/?api=1&query=Fernanda%20Martins%20-%20Cl%C3%ADnica%20Capilar&query_place_id=ChIJaWEFVUxDIZURM13I5FJaaH8"}, {"n": "Clínica Doenças Renais Tubarão S/C Ltda-Fac Símile", "e": "R. Lauro Müller, 633", "t": "(48) 36224-935", "u": "https://www.google.com/maps/search/?api=1&query=Cl%C3%ADnica%20Doen%C3%A7as%20Renais%20Tubar%C3%A3o%20S%2FC%20Ltda-Fac%20S%C3%ADmile&query_place_id=ChIJpaUO4PxCIZURZ11MoVSwHtk"}], "Bom Pastor": [{"n": "Sarah Estética Avançada", "e": "R. João Alfredo Rosa", "t": "", "u": "https://www.google.com/maps/search/?api=1&query=Sarah%20Est%C3%A9tica%20Avan%C3%A7ada&query_place_id=ChIJf7YmKZ9rIZURHnV9l2-iygA"}], "Centro": [{"n": "Clínica de Estética Mariana Gomes", "e": "R. Antônio Delpizzo Júnior, 1701", "t": "(48) 99696-9696", "u": "https://www.google.com/maps/search/?api=1&query=Cl%C3%ADnica%20de%20Est%C3%A9tica%20Mariana%20Gomes&query_place_id=ChIJV1IFxWxDIZURk7exoinys0s"}, {"n": "Dra. Sabrina Rangel Estética Avançada integrativa", "e": "Av. Marcolino Martins Cabral, 1960", "t": "(48) 99117-5501", "u": "https://www.google.com/maps/search/?api=1&query=Dra.%20Sabrina%20Rangel%20Est%C3%A9tica%20Avan%C3%A7ada%20integrativa&query_place_id=ChIJlQabFzIvIpURYhYzfj9Eet4"}, {"n": "Ariane Tessmann | Clínica de Estética Avançada em Tubarão", "e": "R. Padre Geraldo Spettmann, 278", "t": "(48) 99922-0970", "u": "https://www.google.com/maps/search/?api=1&query=Ariane%20Tessmann%20%7C%20Cl%C3%ADnica%20de%20Est%C3%A9tica%20Avan%C3%A7ada%20em%20Tubar%C3%A3o&query_place_id=ChIJeXs6TupDIZURttbLBENfVzA"}, {"n": "Vitale Spa Urbano E Estética", "e": "Rua Tubalcain Faraco, 20", "t": "(48) 98804-9945", "u": "https://www.google.com/maps/search/?api=1&query=Vitale%20Spa%20Urbano%20E%20Est%C3%A9tica&query_place_id=ChIJ1_IzqfxCIZUR-flnIY0HDg0"}, {"n": "Realizze Estética Avançada (by Sabrina Michele)", "e": "R. Cel. Cabral, 591", "t": "(48) 98851-3464", "u": "https://www.google.com/maps/search/?api=1&query=Realizze%20Est%C3%A9tica%20Avan%C3%A7ada%20(by%20Sabrina%20Michele)&query_place_id=ChIJve4_gFJDIZURhdAsHYEQMf8"}, {"n": "Derma Estética e Cosmética - Tratamento e Skin Care Personalizado - Tubarão SC", "e": "Edifício EJB", "t": "(48) 99926-1916", "u": "https://www.google.com/maps/search/?api=1&query=Derma%20Est%C3%A9tica%20e%20Cosm%C3%A9tica%20-%20Tratamento%20e%20Skin%20Care%20Personalizado%20-%20Tubar%C3%A3o%20SC&query_place_id=ChIJM155rBJpIZUR1Ba4oWlN3M0"}, {"n": "Estética e Bem Estar | Denise Hermesmeyer - Tubarão SC", "e": "Av. Marcolino Martins Cabral, 926", "t": "(48) 99637-0939", "u": "https://www.google.com/maps/search/?api=1&query=Est%C3%A9tica%20e%20Bem%20Estar%20%7C%20Denise%20Hermesmeyer%20-%20Tubar%C3%A3o%20SC&query_place_id=ChIJ1xFsdJxDIZURPczuFK3apjI"}, {"n": "Consultório Camila Calegari - Harmonização Facial e Odontologia Estética em Tubarão", "e": "Av. Marcolino Martins Cabral, 756", "t": "(48) 99945-0374", "u": "https://www.google.com/maps/search/?api=1&query=Consult%C3%B3rio%20Camila%20Calegari%20-%20Harmoniza%C3%A7%C3%A3o%20Facial%20e%20Odontologia%20Est%C3%A9tica%20em%20Tubar%C3%A3o&query_place_id=ChIJjao7Ji5DIZURpBX1hncY5AI"}, {"n": "Dra. Maria Eduarda de OIiveira - Harmonização Facial", "e": "Av. Marcolino Martins Cabral, 926", "t": "(48) 98850-4487", "u": "https://www.google.com/maps/search/?api=1&query=Dra.%20Maria%20Eduarda%20de%20OIiveira%20-%20Harmoniza%C3%A7%C3%A3o%20Facial&query_place_id=ChIJ8_zQkmlDIZURNGb2Qw-ydVU"}, {"n": "Vivax", "e": "R. São Manoel, 196", "t": "(48) 99984-1649", "u": "https://www.google.com/maps/search/?api=1&query=Vivax&query_place_id=ChIJ8VM12LdDIZUR02OFDfepQZQ"}, {"n": "Dra Anita Cattaneo", "e": "R. São José, 325", "t": "(48) 99954-4092", "u": "https://www.google.com/maps/search/?api=1&query=Dra%20Anita%20Cattaneo&query_place_id=ChIJldfgTJpDIZURV5tPOxtKqrM"}, {"n": "GW Beauty House", "e": "R. Piedade, 336", "t": "(48) 36328-532", "u": "https://www.google.com/maps/search/?api=1&query=GW%20Beauty%20House&query_place_id=ChIJg4IIJGhCIZURC0CT4_5TqLE"}, {"n": "Clínica Conceito", "e": "Av. Marcolino Martins Cabral, 926 Edíficio EJB, sala 910", "t": "(48) 99613-1219", "u": "https://www.google.com/maps/search/?api=1&query=Cl%C3%ADnica%20Conceito&query_place_id=ChIJOYt5nA5DIZURInqkLvO0D20"}, {"n": "FLAYBER - Odontologia & Saúde", "e": "Av. Pedro Zapelini, 1270", "t": "(48) 36322-591", "u": "https://www.google.com/maps/search/?api=1&query=FLAYBER%20-%20Odontologia%20%26%20Sa%C3%BAde&query_place_id=ChIJAXeVZedCIZURFE2pOFDZtyE"}, {"n": "Leticia Preve Micropigmentação & Beleza", "e": "Rua Tubalcain Faraco, 150", "t": "(48) 99685-2141", "u": "https://www.google.com/maps/search/?api=1&query=Leticia%20Preve%20Micropigmenta%C3%A7%C3%A3o%20%26%20Beleza&query_place_id=ChIJq1aYSiJDIZURRqLd7WpHzAA"}, {"n": "Oral Unic Implantes Tubarão", "e": "Av. Marcolino Martins Cabral, 2719", "t": "(48) 99802-8533", "u": "https://www.google.com/maps/search/?api=1&query=Oral%20Unic%20Implantes%20Tubar%C3%A3o&query_place_id=ChIJGXkaQONCIZURXZwDE-q-kbg"}, {"n": "Eco Clínica Oficial - Matriz", "e": "Av. Marcolino Martins Cabral, 1688", "t": "(48) 36222-355", "u": "https://www.google.com/maps/search/?api=1&query=Eco%20Cl%C3%ADnica%20Oficial%20-%20Matriz&query_place_id=ChIJR2Ceo-JCIZURtbSmPA7mYWo"}, {"n": "ACR Medical Center", "e": "Av. José Acácio Moreira, 1691", "t": "(48) 99622-6173", "u": "https://www.google.com/maps/search/?api=1&query=ACR%20Medical%20Center&query_place_id=ChIJvR_TsHBDIZUR9zXPQhKcth0"}, {"n": "MEDPREV - Tubarão", "e": "Rua Coronel Colaço, 46", "t": "(48) 36222-929", "u": "https://www.google.com/maps/search/?api=1&query=MEDPREV%20-%20Tubar%C3%A3o&query_place_id=ChIJs9rl0ORCIZUR30sR7MivCk8"}, {"n": "AmorSaúde Tubarão", "e": "Av. Marcolino Martins Cabral, 582", "t": "(48) 30368-839", "u": "https://www.google.com/maps/search/?api=1&query=AmorSa%C3%BAde%20Tubar%C3%A3o&query_place_id=ChIJmw5oTp9DIZURC4_OwXwttZM"}, {"n": "MACROSEG CLÍNICA DE MEDICINA E SEGURANÇA NO TRABALHO", "e": "Av. Marcolino Martins Cabral, 1329", "t": "(48) 36263-472", "u": "https://www.google.com/maps/search/?api=1&query=MACROSEG%20CL%C3%8DNICA%20DE%20MEDICINA%20E%20SEGURAN%C3%87A%20NO%20TRABALHO&query_place_id=ChIJNTIP2OJCIZUReHUmGrDiid0"}, {"n": "Hospital Nossa Senhora da Conceição", "e": "R. Vidal Ramos, 215", "t": "(48) 36317-000", "u": "https://www.google.com/maps/search/?api=1&query=Hospital%20Nossa%20Senhora%20da%20Concei%C3%A7%C3%A3o&query_place_id=ChIJt5CG3OJCIZURL2LzRXGCpy8"}, {"n": "Instituto de Olhos Moreira Marques | Instituto de oftalmologia | Clínica Oftalmológica em Santa Catarina", "e": "R. Teodoto Tonon, 107", "t": "(48) 30536-007", "u": "https://www.google.com/maps/search/?api=1&query=Instituto%20de%20Olhos%20Moreira%20Marques%20%7C%20Instituto%20de%20oftalmologia%20%7C%20Cl%C3%ADnica%20Oftalmol%C3%B3gica%20em%20Santa%20Catarina&query_place_id=ChIJa0kIroRDIZUR6MefGcXC73g"}, {"n": "Radiologia Cabral", "e": "Av. Marcolino Martins Cabral, 1900", "t": "(48) 99150-4040", "u": "https://www.google.com/maps/search/?api=1&query=Radiologia%20Cabral&query_place_id=ChIJa8l8ut9DIZUR8hJbMkRIpAo"}, {"n": "Moresco Saúde", "e": "R. Augusto Severo, 226", "t": "(48) 38010-916", "u": "https://www.google.com/maps/search/?api=1&query=Moresco%20Sa%C3%BAde&query_place_id=ChIJdRcv-e5CIZURVmjkTHP0fAI"}, {"n": "#ERROR!", "e": "R. Conselheiro Mafra, 420", "t": "(48) 30530-048", "u": "https://www.google.com/maps/search/?api=1&query=%2BVision%20Cl%C3%ADnica%20de%20olhos&query_place_id=ChIJ0yIniRxDIZURjbj_kjjs9L0"}, {"n": "CARTÃO DE TODOS TUBARÃo", "e": "Av. Marcolino Martins Cabral, 665", "t": "", "u": "https://www.google.com/maps/search/?api=1&query=CART%C3%83O%20DE%20TODOS%20TUBAR%C3%83o&query_place_id=ChIJ10LEa5VDIZURpRfCCtMHkgs"}, {"n": "SSegur Clinica de Segurança e Medicina do Trabalho", "e": "R. São José, 25", "t": "(48) 30533-175", "u": "https://www.google.com/maps/search/?api=1&query=SSegur%20Clinica%20de%20Seguran%C3%A7a%20e%20Medicina%20do%20Trabalho&query_place_id=ChIJf9tl8eRCIZURTy5UxU-O06U"}, {"n": "Bioage Sul Tubarão", "e": "Av. Marcolino Martins Cabral, 1329", "t": "(48) 98481-0221", "u": "https://www.google.com/maps/search/?api=1&query=Bioage%20Sul%20Tubar%C3%A3o&query_place_id=ChIJBxoAr-BDIZURwGkVJMwSRVk"}, {"n": "Dra Mariane Fissmer", "e": "Avenida Marcolino Martins Cabral, Clínica Pró-vida n2075", "t": "(48) 36311-515", "u": "https://www.google.com/maps/search/?api=1&query=Dra%20Mariane%20Fissmer&query_place_id=ChIJLfbWVZ5DIZURurt2KLnQls4"}, {"n": "Studio Laysa Mendes", "e": "Av. Pres. Getúlio Vargas, 2593", "t": "(48) 98872-9101", "u": "https://www.google.com/maps/search/?api=1&query=Studio%20Laysa%20Mendes&query_place_id=ChIJA5_2NhxDIZURHrEChPTsuRg"}, {"n": "Graziele Vandresen Dermatologista Veterinária e Otologia", "e": "R. Teodoto Tonon, 356", "t": "(48) 99111-3331", "u": "https://www.google.com/maps/search/?api=1&query=Graziele%20Vandresen%20Dermatologista%20Veterin%C3%A1ria%20e%20Otologia&query_place_id=ChIJbUAygkdDIZURVppNCbpnIWo"}, {"n": "Claudia Ávila Clínica Capilar", "e": "Av. Marcolino Martins Cabral, 1504", "t": "(48) 99931-2871", "u": "https://www.google.com/maps/search/?api=1&query=Claudia%20%C3%81vila%20Cl%C3%ADnica%20Capilar&query_place_id=ChIJndE8k6ZDIZURSEcXR1jYn2A"}, {"n": "Ortoimagem Centro de Ortopedia e Imagem - Tubarão", "e": "Rua Padre Bernardo Freuser, 228", "t": "(48) 36311-400", "u": "https://www.google.com/maps/search/?api=1&query=Ortoimagem%20Centro%20de%20Ortopedia%20e%20Imagem%20-%20Tubar%C3%A3o&query_place_id=ChIJJaZdL-NCIZURNGnKgeTeSL4"}, {"n": "Espaço Stefani", "e": "R. Esteves Júnior", "t": "", "u": "https://www.google.com/maps/search/?api=1&query=Espa%C3%A7o%20Stefani&query_place_id=ChIJKwPmGpJDIZUROpJyO87Ohio"}, {"n": "OrthoDontic", "e": "Av. Marcolino Martins Cabral, 1315", "t": "(48) 40421-005", "u": "https://www.google.com/maps/search/?api=1&query=OrthoDontic&query_place_id=ChIJrUKaRXJDIZURnMFq0BBbvIw"}, {"n": "Magrass Tubarão", "e": "R. Felipe Schmidt, 77", "t": "(48) 30530-505", "u": "https://www.google.com/maps/search/?api=1&query=Magrass%20Tubar%C3%A3o&query_place_id=ChIJB4ZPquNCIZURNYGp7Wf27Nk"}, {"n": "Clínica Veterinária Pequenos Amigos", "e": "R. Conselheiro Mafra, 240", "t": "(48) 36223-868", "u": "https://www.google.com/maps/search/?api=1&query=Cl%C3%ADnica%20Veterin%C3%A1ria%20Pequenos%20Amigos&query_place_id=ChIJ586iNeJCIZURwktcHR7TRzQ"}, {"n": "Volte a Sorrir Centro Odontológico", "e": "Rua Coronel Colaço, 32", "t": "(48) 99160-4836", "u": "https://www.google.com/maps/search/?api=1&query=Volte%20a%20Sorrir%20Centro%20Odontol%C3%B3gico&query_place_id=ChIJp7tS0eRCIZURgaUzO5Zy5VA"}, {"n": "orALL Odontologia - Dentista - Implante Dentário - Tubarão SC", "e": "R. Conselheiro Mafra, 80", "t": "(48) 93381-4119", "u": "https://www.google.com/maps/search/?api=1&query=orALL%20Odontologia%20-%20Dentista%20-%20Implante%20Dent%C3%A1rio%20-%20Tubar%C3%A3o%20SC&query_place_id=ChIJU9rnTcJDIZURZ38GIU3eoTY"}], "Congonhas": [{"n": "Clínica feminina Luz e Vida", "e": "R. Manoel João Domingos, 2786", "t": "", "u": "https://www.google.com/maps/search/?api=1&query=Cl%C3%ADnica%20feminina%20Luz%20e%20Vida&query_place_id=ChIJXRnuYgBdIZUR4AbWddUjtJU"}], "Dehon": [{"n": "SAVELLE BELEZA & ESTÉTICA INTEGRADA", "e": "R. Padre Dionísio da Cunha Laudt, 403", "t": "(48) 99639-0354", "u": "https://www.google.com/maps/search/?api=1&query=SAVELLE%20BELEZA%20%26%20EST%C3%89TICA%20INTEGRADA&query_place_id=ChIJ7ZrzlfRCIZUR0ANfERp45K4"}, {"n": "Harmonize Terapias e Estética", "e": "Av. Expedicionário José Pedro Coelho, 102", "t": "(48) 99956-9976", "u": "https://www.google.com/maps/search/?api=1&query=Harmonize%20Terapias%20e%20Est%C3%A9tica&query_place_id=ChIJR7DOq-VCIZURRJjH8b6FIW4"}], "Humaitá": [{"n": "Dra. Gabriela Ribeiro | Harmonização Facial e Corporal em Tubarão - SC", "e": "R. Roberto Zumblick, 543", "t": "(48) 99958-4085", "u": "https://www.google.com/maps/search/?api=1&query=Dra.%20Gabriela%20Ribeiro%20%7C%20Harmoniza%C3%A7%C3%A3o%20Facial%20e%20Corporal%20em%20Tubar%C3%A3o%20-%20SC&query_place_id=ChIJDbHGMfJDIZURAMhnlRDWCv4"}, {"n": "Lilly Beauty Cílios , sobrancelha ,Micropigmentação,progressiva ,botox capilar em Tubarão SC", "e": "R. Roberto Zumblick, 1090", "t": "(16) 99162-7970", "u": "https://www.google.com/maps/search/?api=1&query=Lilly%20Beauty%20C%C3%ADlios%20%2C%20sobrancelha%20%2CMicropigmenta%C3%A7%C3%A3o%2Cprogressiva%20%2Cbotox%20capilar%20em%20Tubar%C3%A3o%20SC&query_place_id=ChIJAylNeSJDIZURz4DqKnpg7uc"}, {"n": "Elis Hilário Estética Avançada", "e": "Av. Patrício Lima", "t": "(48) 99145-3308", "u": "https://www.google.com/maps/search/?api=1&query=Elis%20Hil%C3%A1rio%20Est%C3%A9tica%20Avan%C3%A7ada&query_place_id=ChIJV-sDgB5DIZUR02evB9R8VBw"}, {"n": "Juliana Dal Bó Clínica de Fisioterapia e Estética", "e": "R. Cel. José Martins Cabral, 954", "t": "(48) 99966-6204", "u": "https://www.google.com/maps/search/?api=1&query=Juliana%20Dal%20B%C3%B3%20Cl%C3%ADnica%20de%20Fisioterapia%20e%20Est%C3%A9tica&query_place_id=ChIJFxcwIFlCIZURgo6s6FyF-q0"}, {"n": "Clínica Mita", "e": "R. Manoel Antunes Teixeira, 987", "t": "(48) 99975-4514", "u": "https://www.google.com/maps/search/?api=1&query=Cl%C3%ADnica%20Mita&query_place_id=ChIJN6KV2blDIZURAxWZ0tQQ6ho"}], "Humaitá de Cima": [{"n": "Clínica de Estética Nikolly Stupp", "e": "Av. Patrício Lima, 1551", "t": "(48) 99997-4927", "u": "https://www.google.com/maps/search/?api=1&query=Cl%C3%ADnica%20de%20Est%C3%A9tica%20Nikolly%20Stupp&query_place_id=ChIJhfUR8k9DIZURTZEgQrIACyQ"}], "Oficinas": [{"n": "Kariely Albino - Clínica de Estética Avançada. Emagrecimento, Criolipólise - Lipoice21, Depilação, Drenagem", "e": "R. Lauro Müller, 450", "t": "(48) 99610-8481", "u": "https://www.google.com/maps/search/?api=1&query=Kariely%20Albino%20-%20Cl%C3%ADnica%20de%20Est%C3%A9tica%20Avan%C3%A7ada.%20Emagrecimento%2C%20Criolip%C3%B3lise%20-%20Lipoice21%2C%20Depila%C3%A7%C3%A3o%2C%20Drenagem&query_place_id=ChIJNXoatTtDIZURh9PsKyiZ9Go"}, {"n": "Clinvitta Clínica de Estética e Harmonização Facial", "e": "R. Galdino José de Bessa, 784", "t": "(48) 99179-1313", "u": "https://www.google.com/maps/search/?api=1&query=Clinvitta%20Cl%C3%ADnica%20de%20Est%C3%A9tica%20e%20Harmoniza%C3%A7%C3%A3o%20Facial&query_place_id=ChIJrcBEkoBDIZURqdJy0WAJ73Y"}, {"n": "Dra. Zanelatto Harmonização Facial Tubarão/ SC", "e": "R. Galdino José de Bessa, 784", "t": "(48) 99155-1551", "u": "https://www.google.com/maps/search/?api=1&query=Dra.%20Zanelatto%20Harmoniza%C3%A7%C3%A3o%20Facial%20Tubar%C3%A3o%2F%20SC&query_place_id=ChIJZeltq-ZDIZURb-aElzSGk-A"}, {"n": "Studio Ravila - Saúde e Beleza", "e": "R. Silvio Búrigo, 309", "t": "(48) 99968-1611", "u": "https://www.google.com/maps/search/?api=1&query=Studio%20Ravila%20-%20Sa%C3%BAde%20e%20Beleza&query_place_id=ChIJh2VufZRCIZURZzBwYIiZ_Do"}, {"n": "Dra. Franciele Nascimento", "e": "R. Galdino José de Bessa, 784", "t": "(48) 99179-1313", "u": "https://www.google.com/maps/search/?api=1&query=Dra.%20Franciele%20Nascimento&query_place_id=ChIJTahdrY0A8kIRol6B6JHjGMA"}, {"n": "Jéssica Fagundes Centro de estética em Tubarão", "e": "R. Altamiro Guimarães, 1817", "t": "(48) 99600-7500", "u": "https://www.google.com/maps/search/?api=1&query=J%C3%A9ssica%20Fagundes%20Centro%20de%20est%C3%A9tica%20em%20Tubar%C3%A3o&query_place_id=ChIJqek32fdCIZURwbR6_YG_JxM"}, {"n": "Dra. Elaine Zapelini", "e": "R. Altamiro Guimarães, 1337", "t": "(48) 36320-198", "u": "https://www.google.com/maps/search/?api=1&query=Dra.%20Elaine%20Zapelini&query_place_id=ChIJzVPb0-xCIZUREitxyVumAK4"}, {"n": "Odontologia e Harmonizacao Adriano e Heloisa Souza", "e": "R. Laguna, 310", "t": "(48) 99651-6789", "u": "https://www.google.com/maps/search/?api=1&query=Odontologia%20e%20Harmonizacao%20Adriano%20e%20Heloisa%20Souza&query_place_id=ChIJ4SEQdzZDIZURzGigXcsnLEE"}, {"n": "CLÍNICA IUDI - CLÍNICA DE ULTRASSONOGRAFIA", "e": "R. Altamiro Guimarães, 393", "t": "(48) 30524-040", "u": "https://www.google.com/maps/search/?api=1&query=CL%C3%8DNICA%20IUDI%20-%20CL%C3%8DNICA%20DE%20ULTRASSONOGRAFIA&query_place_id=ChIJYYQ29uVCIZURTBMNn0CrS_0"}, {"n": "Policlínica Central", "e": "R. Altamiro Guimarães, 1109", "t": "(48) 36219-605", "u": "https://www.google.com/maps/search/?api=1&query=Policl%C3%ADnica%20Central&query_place_id=ChIJv7k9sO9CIZURph7jd7190sk"}, {"n": "Amadê Saúde e Estética", "e": "R. Manoel Antunes Corrêa, 2222", "t": "(48) 99996-8962", "u": "https://www.google.com/maps/search/?api=1&query=Amad%C3%AA%20Sa%C3%BAde%20e%20Est%C3%A9tica&query_place_id=ChIJZdlvM3lDIZURuEYr6GNBiik"}, {"n": "Marziē Beauty - by Marcy Vieira", "e": "R. Galdino José de Bessa, 784", "t": "(48) 99923-4406", "u": "https://www.google.com/maps/search/?api=1&query=Marzi%C4%93%20Beauty%20-%20by%20Marcy%20Vieira&query_place_id=ChIJ7V4Fg7FDIZURky_OWA03_h8"}, {"n": "LOFTY SKIN", "e": "R. Sen. Arnor Damiani, No. 914", "t": "(48) 98838-9290", "u": "https://www.google.com/maps/search/?api=1&query=LOFTY%20SKIN&query_place_id=ChIJ7-CMwcZCIZURNmrka3IPNBQ"}], "Passagem": [{"n": "Deisy Medeiros Clínica de Beleza | Estética Facial e Corporal, Massoterapia, Depilação, Salão de Beleza, Pilates", "e": "R. Braz Rosalino Da Silva, 61", "t": "(48) 99917-4026", "u": "https://www.google.com/maps/search/?api=1&query=Deisy%20Medeiros%20Cl%C3%ADnica%20de%20Beleza%20%7C%20Est%C3%A9tica%20Facial%20e%20Corporal%2C%20Massoterapia%2C%20Depila%C3%A7%C3%A3o%2C%20Sal%C3%A3o%20de%20Beleza%2C%20Pilates&query_place_id=ChIJPa8wdk1DIZURjli3pCmIM5Y"}, {"n": "Laís Alves Clínica de Estética", "e": "R. Aldomar Cardoso, 243", "t": "(48) 99996-0668", "u": "https://www.google.com/maps/search/?api=1&query=La%C3%ADs%20Alves%20Cl%C3%ADnica%20de%20Est%C3%A9tica&query_place_id=ChIJKTaUPxFDIZURkgmnJec1Nco"}, {"n": "Bèllavi Clinic", "e": "R. Aldomar Cardoso, 2219", "t": "(48) 99940-0393", "u": "https://www.google.com/maps/search/?api=1&query=B%C3%A8llavi%20Clinic&query_place_id=ChIJjS6jqadDIZURfaTq23S9Bl8"}, {"n": "Maria Esteticista", "e": "Ed. Satto IV", "t": "(48) 99952-3043", "u": "https://www.google.com/maps/search/?api=1&query=Maria%20Esteticista&query_place_id=ChIJ33kHqZ5DIZURP2BaoShc4EU"}, {"n": "Dra. Eliane Berndt Dermatologista", "e": "R. Aldomar Cardoso, 2219", "t": "(48) 99644-3273", "u": "https://www.google.com/maps/search/?api=1&query=Dra.%20Eliane%20Berndt%20Dermatologista&query_place_id=ChIJy_V04Vc1J5URTg74yG62q-o"}, {"n": "Dra. Flávia Bresciani - Médica Dermatologista", "e": "anexo ao Centro Clínico Mamprim", "t": "(48) 40422-916", "u": "https://www.google.com/maps/search/?api=1&query=Dra.%20Fl%C3%A1via%20Bresciani%20-%20M%C3%A9dica%20Dermatologista&query_place_id=ChIJ_etnlVcRIZUR2udHH59F2BQ"}, {"n": "Clinica Odontotologica e Estetica Fernanda Rosa - botox - preenchimentos e glúteos", "e": "Av. Marcolino Martins Cabral, 3629", "t": "(48) 99818-2424", "u": "https://www.google.com/maps/search/?api=1&query=Clinica%20Odontotologica%20e%20Estetica%20Fernanda%20Rosa%20-%20botox%20-%20preenchimentos%20e%20gl%C3%BAteos&query_place_id=ChIJU3iO2ulDIZURNMVWQaatsOI"}, {"n": "Clínica Júlia Soares Cirurgia Plástica Integrada", "e": "R. Aldomar Cardoso, 2219", "t": "(48) 99940-0009", "u": "https://www.google.com/maps/search/?api=1&query=Cl%C3%ADnica%20J%C3%BAlia%20Soares%20Cirurgia%20Pl%C3%A1stica%20Integrada&query_place_id=ChIJ533WvQ9DIZURAYxlQPXoGe4"}, {"n": "Espaço da Beleza", "e": "Av. Marcolino Martins Cabral, 3746", "t": "(48) 98863-5492", "u": "https://www.google.com/maps/search/?api=1&query=Espa%C3%A7o%20da%20Beleza&query_place_id=ChIJ2bRR3cFDIZURj9hzOPH3uFY"}, {"n": "Dra. Gabriela Bittencourt", "e": "R. Aldomar Cardoso, 200", "t": "(48) 99111-3297", "u": "https://www.google.com/maps/search/?api=1&query=Dra.%20Gabriela%20Bittencourt&query_place_id=ChIJowoABMtDIZURu7caV5ATL0A"}, {"n": "Dandara Medeiros Odontologia Estética", "e": "Rua Aldomar Cardoso 243, Sala Térrea 02", "t": "", "u": "https://www.google.com/maps/search/?api=1&query=Dandara%20Medeiros%20Odontologia%20Est%C3%A9tica&query_place_id=ChIJvwZ0gwxDIZURgZ8gqP2Fkto"}, {"n": "Hospital Unimed Tubarão", "e": "R. Aldomar Cardoso, 198", "t": "(48) 36212-500", "u": "https://www.google.com/maps/search/?api=1&query=Hospital%20Unimed%20Tubar%C3%A3o&query_place_id=ChIJkWnlRdhDIZURZEiQNEDSZ7s"}, {"n": "Clínica Capri - Medicina Capilar", "e": "Rua Aldomar Cardoso 64, Edíficio Satto IV, Sala 101", "t": "(48) 31920-164", "u": "https://www.google.com/maps/search/?api=1&query=Cl%C3%ADnica%20Capri%20-%20Medicina%20Capilar&query_place_id=ChIJSYyGvZJDIZURcyUAWsAGIVQ"}, {"n": "Dra. Marina Michels Duarte", "e": "Clínica Dermont", "t": "(48) 99834-8796", "u": "https://www.google.com/maps/search/?api=1&query=Dra.%20Marina%20Michels%20Duarte&query_place_id=ChIJcdzfxURDIZURMZ_KFBsO8Rk"}, {"n": "Dr Felipe Mamprim - Angiologia e Cirurgia Vascular Tubarão SC", "e": "R. Aldomar Cardoso, 125 térreo", "t": "(48) 99191-2595", "u": "https://www.google.com/maps/search/?api=1&query=Dr%20Felipe%20Mamprim%20-%20Angiologia%20e%20Cirurgia%20Vascular%20Tubar%C3%A3o%20SC&query_place_id=ChIJ62Ed6dNDIZURVFm1ng-vICY"}, {"n": "Priscila Canto Dermatofuncional", "e": "Ed. Satto IV", "t": "(48) 99912-1601", "u": "https://www.google.com/maps/search/?api=1&query=Priscila%20Canto%20Dermatofuncional&query_place_id=ChIJm30EOB5DIZUR7wTc-DTPjzk"}, {"n": "Dra Hellen Dias | Médica | Saúde Capilar", "e": "Av. Marcolino Martins Cabral, 3629", "t": "(48) 99130-1680", "u": "https://www.google.com/maps/search/?api=1&query=Dra%20Hellen%20Dias%20%7C%20M%C3%A9dica%20%7C%20Sa%C3%BAde%20Capilar&query_place_id=ChIJC3APF6xDIZUR6yCloB9paBI"}, {"n": "Móss Health Hub", "e": "R. Aldomar Cardoso, 64", "t": "(48) 31920-982", "u": "https://www.google.com/maps/search/?api=1&query=M%C3%B3ss%20Health%20Hub&query_place_id=ChIJWb-NM9pDIZURV9WISVh82vc"}], "Passo do Gado": [{"n": "Studio Deya", "e": "Rua Argemiro Alegre, 2905", "t": "(48) 98492-3911", "u": "https://www.google.com/maps/search/?api=1&query=Studio%20Deya&query_place_id=ChIJiVbsP_RDIZURj8LWAOpbVrY"}, {"n": "COMUNIDADE TERAPÊUTICO ABBA PAI", "e": "Rua Amazonas", "t": "(48) 99982-7915", "u": "https://www.google.com/maps/search/?api=1&query=COMUNIDADE%20TERAP%C3%8AUTICO%20ABBA%20PAI&query_place_id=ChIJNfx0e-pDIZURE_hxEowfFNo"}], "Recife": [{"n": "Isadora Alano Esteticista", "e": "R. Wenceslau Bráz, 910", "t": "(48) 98839-6369", "u": "https://www.google.com/maps/search/?api=1&query=Isadora%20Alano%20Esteticista&query_place_id=ChIJXQ4tYPFDIZURfz9eVnqNf3Y"}], "Revoredo": [{"n": "Clinica Leticia Santos Estética e bem estar", "e": "Av. Expedicionário José Pedro Coelho, 2616", "t": "(48) 99800-7762", "u": "https://www.google.com/maps/search/?api=1&query=Clinica%20Leticia%20Santos%20Est%C3%A9tica%20e%20bem%20estar&query_place_id=ChIJJ8oLIDhDIZURciH54enc2Cw"}, {"n": "Unni Studio de Beleza", "e": "Av. Expedicionário José Pedro Coelho, 1535", "t": "(48) 36280-787", "u": "https://www.google.com/maps/search/?api=1&query=Unni%20Studio%20de%20Beleza&query_place_id=ChIJcdFVI_xCIZURwMJ5wry6EII"}, {"n": "Unnica Espaço Integrado", "e": "Av. Expedicionário José Pedro Coelho, 1535", "t": "(48) 36223-189", "u": "https://www.google.com/maps/search/?api=1&query=Unnica%20Espa%C3%A7o%20Integrado&query_place_id=ChIJ6TdNiIpDIZURLBlnfkZBrQg"}, {"n": "Dra. Beatriz Uthman", "e": "Unnica Espaço Integrado", "t": "(48) 99120-0160", "u": "https://www.google.com/maps/search/?api=1&query=Dra.%20Beatriz%20Uthman&query_place_id=ChIJyVrmjbZDIZURBvL7hCKcSdU"}], "Santa Luzia": [{"n": "Comunidade Terapêutica Reconstruir Vidas", "e": "Estr. Geral da Me., 16080", "t": "(48) 98813-0009", "u": "https://www.google.com/maps/search/?api=1&query=Comunidade%20Terap%C3%AAutica%20Reconstruir%20Vidas&query_place_id=ChIJ9Qc-7rZcIZURTf90fJZvniw"}], "Santo Antônio de Pádua": [{"n": "RM Clinic", "e": "Av. Pedro Zapelini, 1790", "t": "(48) 99907-4168", "u": "https://www.google.com/maps/search/?api=1&query=RM%20Clinic&query_place_id=ChIJmUK5-4hDIZURho-MmHtPQMA"}, {"n": "Estética Daniela Máximo", "e": "R. Luiz Martins Collaço, 820", "t": "(48) 99696-5327", "u": "https://www.google.com/maps/search/?api=1&query=Est%C3%A9tica%20Daniela%20M%C3%A1ximo&query_place_id=ChIJC2442jJDIZURzVsvdvDO_-E"}], "Sertão dos Correias": [{"n": "Gabrielly Centro de Beleza e Estética Avançada", "e": "Rod. Alfredo Anacleto da Silva, 1959", "t": "(48) 36268-921", "u": "https://www.google.com/maps/search/?api=1&query=Gabrielly%20Centro%20de%20Beleza%20e%20Est%C3%A9tica%20Avan%C3%A7ada&query_place_id=ChIJ9-490TdoIZURRi4dXZ5ofCw"}], "São João Margem Esquerda": [{"n": "Clínica Thayane", "e": "R. São João, 1644", "t": "(48) 99180-8394", "u": "https://www.google.com/maps/search/?api=1&query=Cl%C3%ADnica%20Thayane&query_place_id=ChIJmyO5WipDIZURpGTsM-vW2hc"}], "Vila Esperança": [{"n": "Luxe Odontologia", "e": "R. João Fernandes Lima, 470", "t": "(48) 98854-2770", "u": "https://www.google.com/maps/search/?api=1&query=Luxe%20Odontologia&query_place_id=ChIJ1w-871pDIZURN1yrBb233kI"}], "Vila Moema": [{"n": "Clínica Estética Virtuosa TUBARÃO", "e": "José Evaristo Fogaça, Rua do fundo dos Fórum, 431", "t": "(48) 31910-831", "u": "https://www.google.com/maps/search/?api=1&query=Cl%C3%ADnica%20Est%C3%A9tica%20Virtuosa%20TUBAR%C3%83O&query_place_id=ChIJ49DPzDdDIZURgyrIDSm-JHo"}, {"n": "Bella Si - Clinica estética avançada Tubarão", "e": "R. Wenceslau Bráz, 285", "t": "(48) 99209-1306", "u": "https://www.google.com/maps/search/?api=1&query=Bella%20Si%20-%20Clinica%20est%C3%A9tica%20avan%C3%A7ada%20Tubar%C3%A3o&query_place_id=ChIJwZvtLDRDIZURmtNJuPQmOu0"}, {"n": "Reva-se Clínica Estética Depilação e Harmonização Facial em Tubarão-SC", "e": "Ed. Prime", "t": "(48) 31921-228", "u": "https://www.google.com/maps/search/?api=1&query=Reva-se%20Cl%C3%ADnica%20Est%C3%A9tica%20Depila%C3%A7%C3%A3o%20e%20Harmoniza%C3%A7%C3%A3o%20Facial%20em%20Tubar%C3%A3o-SC&query_place_id=ChIJBRbtl85DIZURMo7Dn22LHIM"}, {"n": "DUO CLINIC", "e": "Av. Marcolino Martins Cabral, 3108", "t": "(48) 99113-2586", "u": "https://www.google.com/maps/search/?api=1&query=DUO%20CLINIC&query_place_id=ChIJlZBZUmNDIZURQru9HXwbqUs"}, {"n": "Jamile Varnier Estética Avançada", "e": "Centro Executivo Alfredo José, Rua Teresa Ghizoni, 44", "t": "(48) 99604-4689", "u": "https://www.google.com/maps/search/?api=1&query=Jamile%20Varnier%20Est%C3%A9tica%20Avan%C3%A7ada&query_place_id=ChIJm8hKLVZCIZURp2sxXR9pRgE"}, {"n": "Maressa Demetrio Estética Avançada", "e": "R. Candido Cesar Freire Leão, 199", "t": "(48) 99972-2784", "u": "https://www.google.com/maps/search/?api=1&query=Maressa%20Demetrio%20Est%C3%A9tica%20Avan%C3%A7ada&query_place_id=ChIJUYnYNPJDIZURU7yaILAITpU"}, {"n": "Maélia - Estética Avançada", "e": "Avenida Marcolino Martins Cabral, 2075 Interclínicas, Bloco B", "t": "(48) 99130-6798", "u": "https://www.google.com/maps/search/?api=1&query=Ma%C3%A9lia%20-%20Est%C3%A9tica%20Avan%C3%A7ada&query_place_id=ChIJj9_X-mZDIZURhsk4uYfO6RA"}, {"n": "Dra. Elis Hilário - Harmonização Facial | Botox | Preenchimento Labial | Harmonização Facial em Tubarão", "e": "R. Paraguai, 252", "t": "(48) 99145-3308", "u": "https://www.google.com/maps/search/?api=1&query=Dra.%20Elis%20Hil%C3%A1rio%20-%20Harmoniza%C3%A7%C3%A3o%20Facial%20%7C%20Botox%20%7C%20Preenchimento%20Labial%20%7C%20Harmoniza%C3%A7%C3%A3o%20Facial%20em%20Tubar%C3%A3o&query_place_id=ChIJ636BvUZDIZURYZ7IuH8itLY"}, {"n": "Flaviane Antunes", "e": "R. Florianópolis, 99", "t": "(48) 99853-3321", "u": "https://www.google.com/maps/search/?api=1&query=Flaviane%20Antunes&query_place_id=ChIJMbRSnk1DIZURdJBFP4ZCuxE"}, {"n": "Clínica Dermatológica Dermont - Tubarão SC", "e": "Rua Aldomar Cardoso, 64, Salas 501 e 502", "t": "(48) 99834-8796", "u": "https://www.google.com/maps/search/?api=1&query=Cl%C3%ADnica%20Dermatol%C3%B3gica%20Dermont%20-%20Tubar%C3%A3o%20SC&query_place_id=ChIJcaPA23NDIZUR6oRntxcC8sc"}, {"n": "Dra. Lais Machado Dermatologia", "e": "Av. Marcolino Martins Cabral, 2526", "t": "(48) 98856-0106", "u": "https://www.google.com/maps/search/?api=1&query=Dra.%20Lais%20Machado%20Dermatologia&query_place_id=ChIJybvDLgBDIZURJCcHm2v-I2I"}, {"n": "Dra. Naiana Sá - Dermatologista - Tubarão/SC", "e": "R. Florianópolis, 328", "t": "(48) 99665-0446", "u": "https://www.google.com/maps/search/?api=1&query=Dra.%20Naiana%20S%C3%A1%20-%20Dermatologista%20-%20Tubar%C3%A3o%2FSC&query_place_id=ChIJ0yIniRxDIZURd3kwdJcT8mc"}, {"n": "Dra Isabel Alves", "e": "edifício Satto IV", "t": "", "u": "https://www.google.com/maps/search/?api=1&query=Dra%20Isabel%20Alves&query_place_id=ChIJuz0qJkJDIZURYgB9c8mLS9g"}, {"n": "Dra. Lilian Karla Ramos-Dermatologista", "e": "Av. Marcolino Martins Cabral, 2099", "t": "(48) 99686-6456", "u": "https://www.google.com/maps/search/?api=1&query=Dra.%20Lilian%20Karla%20Ramos-Dermatologista&query_place_id=ChIJSfjJkmtDIZURfHdKLr7ySQE"}, {"n": "Dra. Mariana Tubone - Dermatologista - Tubarão/SC", "e": "Av. Marcolino Martins Cabral, 2099", "t": "(48) 36263-267", "u": "https://www.google.com/maps/search/?api=1&query=Dra.%20Mariana%20Tubone%20-%20Dermatologista%20-%20Tubar%C3%A3o%2FSC&query_place_id=ChIJbT3_Uh1DIZURnRFTf1JBI2w"}, {"n": "Jonas Heidemann Salão De Beleza em Tubarão", "e": "R. Candido Cesar Freire Leão, 235", "t": "(48) 99952-4567", "u": "https://www.google.com/maps/search/?api=1&query=Jonas%20Heidemann%20Sal%C3%A3o%20De%20Beleza%20em%20Tubar%C3%A3o&query_place_id=ChIJoXys_zxDIZURkogGo2Q9gQc"}, {"n": "Luciana Masson | Micropigmentação Paramédica | Sobrancelhas | Labios | Delineador | Camuflagem | Tratamento Melasma", "e": "R. Miguel Inácio Faraco, 263", "t": "(19) 98861-0431", "u": "https://www.google.com/maps/search/?api=1&query=Luciana%20Masson%20%7C%20Micropigmenta%C3%A7%C3%A3o%20Param%C3%A9dica%20%7C%20Sobrancelhas%20%7C%20Labios%20%7C%20Delineador%20%7C%20Camuflagem%20%7C%20Tratamento%20Melasma&query_place_id=ChIJOYeYepVDIZURE7xN_Z6Uo2I"}, {"n": "Clinica de Estética - Ingrid Nandi Bruschi", "e": "R. Candido Cesar Freire Leão, 453", "t": "(48) 99163-7415", "u": "https://www.google.com/maps/search/?api=1&query=Clinica%20de%20Est%C3%A9tica%20-%20Ingrid%20Nandi%20Bruschi&query_place_id=ChIJ05a-NuN3PGkRCuMUDcgvM9E"}, {"n": "Dra. Cleice Grabner", "e": "R. Doná Antônina Búrigo Corbeta, 360", "t": "(48) 36265-064", "u": "https://www.google.com/maps/search/?api=1&query=Dra.%20Cleice%20Grabner&query_place_id=ChIJRWJCqd5DIZUR1hGEhIUjR_A"}, {"n": "Instituto Dra Taiane Limas", "e": "R. Miguel Inácio Faraco, 89", "t": "(48) 99901-6425", "u": "https://www.google.com/maps/search/?api=1&query=Instituto%20Dra%20Taiane%20Limas&query_place_id=ChIJsykrFmlDIZURty-FFedNqaI"}, {"n": "Dra Gabriele Accordi – Harmonização Corporal", "e": "R. José Evaristo Fogaça", "t": "(48) 36328-959", "u": "https://www.google.com/maps/search/?api=1&query=Dra%20Gabriele%20Accordi%20%E2%80%93%20Harmoniza%C3%A7%C3%A3o%20Corporal&query_place_id=ChIJ6ZanUNJDIZURCqZbshCe9ec"}, {"n": "Alê Araújo- Clínica de Estética", "e": "Edifício Prime Business", "t": "(48) 99655-0039", "u": "https://www.google.com/maps/search/?api=1&query=Al%C3%AA%20Ara%C3%BAjo-%20Cl%C3%ADnica%20de%20Est%C3%A9tica&query_place_id=ChIJ3Qd0nzxDIZURjUmN6qNvcvw"}, {"n": "Clínica Integrada | Débora Pinheiro | Massoterapia e Estética", "e": "R. Candido Cesar Freire Leão, 199", "t": "(48) 98806-9352", "u": "https://www.google.com/maps/search/?api=1&query=Cl%C3%ADnica%20Integrada%20%7C%20D%C3%A9bora%20Pinheiro%20%7C%20Massoterapia%20e%20Est%C3%A9tica&query_place_id=ChIJ3RqW8KtDIZURPIPSkIx3alY"}, {"n": "Complexo Médico Provida", "e": "Av. Marcolino Martins Cabral, 2075", "t": "(48) 36311-500", "u": "https://www.google.com/maps/search/?api=1&query=Complexo%20M%C3%A9dico%20Provida&query_place_id=ChIJwRjsKwNDIZURDdAubKmc6do"}, {"n": "ICAMED - Tubarão", "e": "R. Candido Cesar Freire Leão, 450", "t": "(48) 31997-676", "u": "https://www.google.com/maps/search/?api=1&query=ICAMED%20-%20Tubar%C3%A3o&query_place_id=ChIJV7AJHotDIZURZ40rLNeLC54"}, {"n": "Centro de Imagem Unimed Tubarão", "e": "R. Wenceslau Bráz, 37", "t": "(48) 36210-200", "u": "https://www.google.com/maps/search/?api=1&query=Centro%20de%20Imagem%20Unimed%20Tubar%C3%A3o&query_place_id=ChIJAX8qUwNDIZURjZBN9drgEQk"}, {"n": "Clinica Vivare Tubarão", "e": "R. Doná Antônina Búrigo Corbeta, 360", "t": "(48) 98402-6198", "u": "https://www.google.com/maps/search/?api=1&query=Clinica%20Vivare%20Tubar%C3%A3o&query_place_id=ChIJj2XXMn1DIZURSfKPwmpsYsk"}, {"n": "Clínica de Doenças Renais Tubarão", "e": "Rua Teresa Ghizoni, 44", "t": "(48) 36224-935", "u": "https://www.google.com/maps/search/?api=1&query=Cl%C3%ADnica%20de%20Doen%C3%A7as%20Renais%20Tubar%C3%A3o&query_place_id=ChIJp4cjjwJDIZURvexqmJeFyKE"}, {"n": "Climed", "e": "1º Ed.Sato", "t": "(48) 99925-4815", "u": "https://www.google.com/maps/search/?api=1&query=Climed&query_place_id=ChIJxUztwh1DIZURMM6eekMPb54"}, {"n": "Cordis Clínica Cardiológica", "e": "Av. Marcolino Martins Cabral, 2255", "t": "(48) 36269-555", "u": "https://www.google.com/maps/search/?api=1&query=Cordis%20Cl%C3%ADnica%20Cardiol%C3%B3gica&query_place_id=ChIJM_swWB1DIZURiKA9SwdMGVI"}, {"n": "Femmi Clínica Médica - Dra. Débora Ferreira", "e": "R. Wenceslau Bráz, 600", "t": "(48) 99178-2673", "u": "https://www.google.com/maps/search/?api=1&query=Femmi%20Cl%C3%ADnica%20M%C3%A9dica%20-%20Dra.%20D%C3%A9bora%20Ferreira&query_place_id=ChIJzTq2aXVDIZURWOXVhFSZbjk"}, {"n": "Dra Priscilla Aquino Pediatra em Tubarao-sc", "e": "R. Doná Antônina Búrigo Corbeta, 360", "t": "(48) 98402-6198", "u": "https://www.google.com/maps/search/?api=1&query=Dra%20Priscilla%20Aquino%20Pediatra%20em%20Tubarao-sc&query_place_id=ChIJWywZJIVDIZURm3sM9vemI2M"}, {"n": "Neuroreab Clínica de reabilitação neuromotora e estimulação de bebês", "e": "R. Candido Cesar Freire Leão, 706", "t": "(48) 30531-338", "u": "https://www.google.com/maps/search/?api=1&query=Neuroreab%20Cl%C3%ADnica%20de%20reabilita%C3%A7%C3%A3o%20neuromotora%20e%20estimula%C3%A7%C3%A3o%20de%20beb%C3%AAs&query_place_id=ChIJJfkuRONCIZURaLQVPSi7cks"}, {"n": "Le Sens Saúde Integrada", "e": "R. José Evaristo Fogaça, 456", "t": "(48) 31920-828", "u": "https://www.google.com/maps/search/?api=1&query=Le%20Sens%20Sa%C3%BAde%20Integrada&query_place_id=ChIJSd5jakpDIZUROoLfb89CKVM"}, {"n": "Dra. Mirella Dal Bó - Dermatologista", "e": "Edifício Satto IV", "t": "(48) 99834-8796", "u": "https://www.google.com/maps/search/?api=1&query=Dra.%20Mirella%20Dal%20B%C3%B3%20-%20Dermatologista&query_place_id=ChIJeYL8DuNDIZUREyf65p06Nfc"}, {"n": "Dra. Maisa Menegali Dermatologista", "e": "Rua Aldomar Cardoso, 64 Edifício Satto IV", "t": "(48) 99834-8796", "u": "https://www.google.com/maps/search/?api=1&query=Dra.%20Maisa%20Menegali%20Dermatologista&query_place_id=ChIJIf5IGJBDIZURSzNL2QwQUDE"}, {"n": "Cínthia Mendes Dermatologista", "e": "Tv. Antônio Manoel Prudêncio, 37", "t": "(48) 98856-7680", "u": "https://www.google.com/maps/search/?api=1&query=C%C3%ADnthia%20Mendes%20Dermatologista&query_place_id=ChIJuQto1BdDIZURsFjzUYnoQLI"}, {"n": "Dra. Miriam Popoaski", "e": "Complexo Médico PROVIDA", "t": "(48) 99107-2425", "u": "https://www.google.com/maps/search/?api=1&query=Dra.%20Miriam%20Popoaski&query_place_id=ChIJnSFZUR1DIZURHxSmP9Aq5mY"}, {"n": "Clinova Especialidades Médicas", "e": "Avenida Marcolino Martins Cabral, 2099 Medical Center, Sala 802", "t": "(48) 30535-767", "u": "https://www.google.com/maps/search/?api=1&query=Clinova%20Especialidades%20M%C3%A9dicas&query_place_id=ChIJJfkuRONCIZURztcmOOhyoow"}]};
+
+// Day-to-bairro mapping
+const DAY_MAP = {
+  "Segunda 23/03": ["Aeroporto", "Vila Moema"],
+  "Terça 24/03": ["Vila Moema", "Passagem"],
+  "Quarta 25/03": ["Oficinas", "Revoredo", "Dehon"],
+  "Quinta 26/03": ["Centro"],
+  "Sexta 27/03": ["Centro"]
+};
+
+const WEEK = [
+  {
+    day: "Segunda", date: "23/03",
+    bairros: ["Aeroporto", "Vila Moema"],
+    focus: "Bairro base — Shopping Farol e Av. Marcolino",
+    note: "Começa do zero! Aeroporto (7 clínicas) + início da Av. Marcolino rumo a Vila Moema.",
+    meta: 10
+  },
+  {
+    day: "Terça", date: "24/03",
+    bairros: ["Vila Moema", "Passagem"],
+    focus: "Vila Moema (continuação) + Passagem",
+    note: "Vila Moema tem 39 empresas — dois dias para cobrir bem. Passagem é compacto e contíguo.",
+    meta: 10
+  },
+  {
+    day: "Quarta", date: "25/03",
+    bairros: ["Oficinas", "Revoredo", "Dehon"],
+    focus: "Eixo Av. Expedicionário José Pedro Coelho",
+    note: "Revoredo e Dehon ficam na mesma avenida — faça o circuito em sequência saindo de Oficinas.",
+    meta: 10
+  },
+  {
+    day: "Quinta", date: "26/03",
+    bairros: ["Centro"],
+    focus: "Centro — Bloco 1 (norte / Av. Marcolino)",
+    note: "40 clínicas no Centro: hoje o eixo Av. Marcolino + R. Antônio Delpizzo Júnior.",
+    meta: 12
+  },
+  {
+    day: "Sexta", date: "27/03",
+    bairros: ["Centro"],
+    focus: "Centro — Bloco 2 + follow-ups da semana",
+    note: "Fecho do Centro. Reserve 1h para ligar/WhatsApp nos contatos quentes de seg–qui.",
+    meta: 12
+  }
+];
+
+// Track visited companies
+let visited = JSON.parse(localStorage.getItem('visited_tubaro') || '{}');
+// Note: using sessionStorage pattern via in-memory obj since localStorage may not be available
+let visitedMem = {};
+
+function toggleVisit(id) {
+  visitedMem[id] = !visitedMem[id];
+  const btn = document.getElementById('vbtn-' + id);
+  if (btn) {
+    btn.textContent = visitedMem[id] ? '✓ Visitada' : 'Marcar';
+    btn.className = 'visited-btn' + (visitedMem[id] ? ' done' : '');
+  }
+  updateProgress();
+}
+
+function updateProgress() {
+  const count = Object.values(visitedMem).filter(Boolean).length;
+  document.getElementById('vis-count').textContent = count;
+  document.getElementById('prog-bar').style.width = Math.min(100, (count / 54) * 100) + '%';
+}
+
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function renderWeek() {
+  const grid = document.getElementById('week-grid');
+  WEEK.forEach((d, di) => {
+    // Get companies for this day
+    let companies = [];
+    const seen = {};
+    d.bairros.forEach(b => {
+      if (DATA[b]) DATA[b].forEach(c => {
+        if (!seen[c.n]) { seen[c.n] = true; companies.push({...c, bairro: b}); }
+      });
+    });
+    const total = companies.length;
+    
+    const card = document.createElement('div');
+    card.className = 'day-card';
+    card.innerHTML = `
+      <div class="day-header" onclick="toggleDay(${di})">
+        <div class="day-date">
+          <div class="day-name">${d.day}</div>
+          <div class="day-num">${d.date}</div>
+        </div>
+        <div class="day-info">
+          <div class="day-focus">${d.focus}</div>
+          <div class="day-bairros">${d.bairros.map(b => `<span class="bairro-tag">${b}</span>`).join('')}</div>
+          <div class="day-note">${d.note}</div>
+        </div>
+        <div class="day-meta">
+          <div class="meta-num">${d.meta}</div>
+          <div class="meta-label">meta visitas</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">${total} disponíveis</div>
+        </div>
+      </div>
+      <div class="day-body" id="day-body-${di}">
+        <div class="company-list" id="day-companies-${di}"></div>
+      </div>
+    `;
+    grid.appendChild(card);
+    
+    // Render companies
+    const list = document.getElementById('day-companies-' + di);
+    companies.forEach((c, ci) => {
+      const id = `d${di}_${ci}`;
+      const el = document.createElement('div');
+      el.className = 'company-item';
+      el.innerHTML = `
+        <div>
+          <div class="company-num">#${ci+1} · ${c.bairro}</div>
+          <div class="company-name">${c.n}</div>
+          <div class="company-addr">${c.e}</div>
+          ${c.t ? `<div class="company-phone">📞 ${c.t}</div>` : ''}
+        </div>
+        <div class="company-actions">
+          ${c.u ? `<a href="${c.u}" target="_blank" class="btn-maps">📍 Maps</a>` : ''}
+          <button id="vbtn-${id}" class="visited-btn" onclick="toggleVisit('${id}')">Marcar</button>
+        </div>
+      `;
+      list.appendChild(el);
+    });
+  });
+}
+
+function toggleDay(idx) {
+  const body = document.getElementById('day-body-' + idx);
+  body.classList.toggle('open');
+}
+
+function renderBairros() {
+  const container = document.getElementById('bairros-list');
+  const dayFor = {};
+  WEEK.forEach(d => d.bairros.forEach(b => { if (!dayFor[b]) dayFor[b] = d.day + ' ' + d.date; }));
+  
+  Object.entries(DATA).sort((a,b) => b[1].length - a[1].length).forEach(([bairro, companies]) => {
+    const section = document.createElement('div');
+    section.className = 'bairro-section';
+    section.innerHTML = `
+      <div class="bairro-header">
+        <div class="bairro-name">${bairro}</div>
+        <div class="bairro-count">${companies.length} empresas</div>
+        ${dayFor[bairro] ? `<div class="bairro-day-badge">📅 ${dayFor[bairro]}</div>` : '<div class="bairro-day-badge" style="background:rgba(120,120,120,0.1);color:var(--muted)">sem 2+</div>'}
+      </div>
+      <div class="company-list" id="list-${bairro.replace(/ /g,'_')}"></div>
+    `;
+    container.appendChild(section);
+    
+    const list = document.getElementById('list-' + bairro.replace(/ /g,'_'));
+    companies.forEach((c, ci) => {
+      const id = `b_${bairro}_${ci}`;
+      const el = document.createElement('div');
+      el.className = 'company-item';
+      el.dataset.name = c.n.toLowerCase();
+      el.innerHTML = `
+        <div>
+          <div class="company-num">#${ci+1}</div>
+          <div class="company-name">${c.n}</div>
+          <div class="company-addr">${c.e}</div>
+          ${c.t ? `<div class="company-phone">📞 ${c.t}</div>` : ''}
+        </div>
+        <div class="company-actions">
+          ${c.u ? `<a href="${c.u}" target="_blank" class="btn-maps">📍 Maps</a>` : ''}
+        </div>
+      `;
+      list.appendChild(el);
+    });
+  });
+}
+
+function filterCompanies(query) {
+  const q = query.toLowerCase();
+  document.querySelectorAll('.company-item').forEach(el => {
+    if (!el.dataset.name) return;
+    el.style.display = el.dataset.name.includes(q) ? '' : 'none';
+  });
+  document.querySelectorAll('.bairro-section').forEach(sec => {
+    const visible = [...sec.querySelectorAll('.company-item')].some(el => el.style.display !== 'none');
+    sec.style.display = visible ? '' : 'none';
+  });
+}
+
+renderWeek();
+renderBairros();
+</script>
+</body>
+</html>
